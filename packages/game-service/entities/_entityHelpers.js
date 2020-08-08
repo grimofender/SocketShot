@@ -268,6 +268,10 @@ var getHitTarget = function(hitTargets){
 	return hitTarget;		
 }
 
-module.exports.sprayBloodOntoTarget = sprayBloodOntoTarget;
-module.exports.checkIfInLineOfShot = checkIfInLineOfShot;
-module.exports.getHitTarget = getHitTarget;
+if(typeof exports == 'undefined'){
+}
+else {
+	module.exports.sprayBloodOntoTarget = sprayBloodOntoTarget;
+	module.exports.checkIfInLineOfShot = checkIfInLineOfShot;
+	module.exports.getHitTarget = getHitTarget;
+}

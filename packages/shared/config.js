@@ -1,4 +1,10 @@
-const helpers = require('./helperFunctions.js'); //Global helper functions
+var helpers;
+
+if(typeof exports == 'undefined'){
+}
+else {
+	const helpers = require('./helperFunctions.js'); //Global helper functions
+}
 
 global.express = require('express');
 global.app = express();

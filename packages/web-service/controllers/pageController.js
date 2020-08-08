@@ -31,4 +31,13 @@ router.get('/search/:searchText', function(req, res) {
 	res.send(pageContent);
 });
 
+//Single player game
+router.get('/singlePlayerGame', function(req, res) {
+	var pageData = {};
+	// TODO: move this into client deployable
+	var pageContent = fs.readFileSync('../client/singlePlayerGame.html', 'utf8');
+	pageContent = replaceValues(pageData, pageContent);	
+	res.send(pageContent);
+});
+
 module.exports = router;

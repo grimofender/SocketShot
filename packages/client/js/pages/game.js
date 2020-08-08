@@ -58,7 +58,7 @@ socket.on('votesUpdate', function(votesData){
 	document.getElementById("voteCrik").innerHTML = "Battle Creek - [" + votesData.crikVotes + "]";
 });
 
-
+var global = {};
 var debugTimer = 60;
 var debugText = true;
 //'use strict';
@@ -238,73 +238,6 @@ var bagBlue = {
 	y:mapHeight -150,
 	captured:false,
 };
-
-socket.on('pingResponse', function (socketId){
-	if (Player.list[socketId]){
-		ping = stopStopwatch();
-		waitingOnPing = false;
-	}		
-});
-
-var blinkOn = false;
-socket.on('sendClock', function(secondsLeftPlusZeroData, minutesLeftData){
-	if (myPlayer.name == "" || !Player.list[myPlayer.id])
-		return;
-		
-	minutesLeft = minutesLeftData;
-	secondsLeft = secondsLeftPlusZeroData;
-	if (minutesLeft > 0 || secondsLeft > 0){suddenDeath = false; suddenDeathAlpha = 1;}
-	
-	if (parseInt(minutesLeft)*60 + parseInt(secondsLeftPlusZeroData) == 60 && !mute){
-		sfxTimeWarning.play();
-		clockHeight = 266;
-	}
-	//log("CLOCK timeLimit:" + timeLimit.toString());
-	var timerleft = parseInt(minutesLeft)*60 + parseInt(secondsLeftPlusZeroData);
-	//log("timeleft:" + timerleft);
-	if (parseInt(minutesLeft)*60 + parseInt(secondsLeftPlusZeroData) == 0 && suddenDeath == false && blackScore == whiteScore && timeLimit == true && !mute){
-		sfxSuddenDeath.play();
-		suddenDeath = true;
-	}
-	
-	//Border (blink on flag stolen)
-	if (myPlayer.team == "white" && bagRed.captured == true && blinkOn == false){
-		canvas.style.margin = "-5px";
-		canvas.style.border = "5px solid #FF0000";
-		blinkOn = true;
-	}
-	else if (myPlayer.team == "black" && bagBlue.captured == true && blinkOn == false){
-		canvas.style.margin = "-5px";
-		canvas.style.border = "5px solid #FF0000";
-		blinkOn = true;
-	}
-	else {
-		determineBorderStyle();
-		blinkOn = false;
-	}
-
-});
-
-function determineBorderStyle(){
-	canvas.style.margin = "-2px";
-	canvas.style.border = "2px solid #000000";
-	if (myPlayer.health >= 175){
-		canvas.style.margin = "-5px";
-		canvas.style.border = "5px solid #005b98";						
-	}
-	else if (myPlayer.health >= 150){
-		canvas.style.margin = "-4px";
-		canvas.style.border = "4px solid #005b98";						
-	}
-	else if (myPlayer.health >= 125){
-		canvas.style.margin = "-3px";
-		canvas.style.border = "3px solid #005b98";						
-	}
-	else if (myPlayer.health >= 101){
-		canvas.style.margin = "-1px";
-		canvas.style.border = "1px solid #005b98";			
-	}
-}
 
 var shop = {
 	active:false,
@@ -725,6 +658,7 @@ sfxProgressBarReverse.volume(.25);
 
 //-----------------------------PLAYER INITIALIZATION-------------------------------
 var numPlayers = 0;
+
 var myPlayer = {
 	id:0,
 	name:"",
@@ -898,6 +832,73 @@ Notification.list = {};
 
 //----------------------Login-----------------
 logg('Game code initialization');
+
+socket.on('pingResponse', function (socketId){
+	if (Player.list[socketId]){
+		ping = stopStopwatch();
+		waitingOnPing = false;
+	}
+});
+
+var blinkOn = false;
+socket.on('sendClock', function(secondsLeftPlusZeroData, minutesLeftData){
+	if (myPlayer.name == "" || !Player.list[myPlayer.id])
+		return;
+		
+	minutesLeft = minutesLeftData;
+	secondsLeft = secondsLeftPlusZeroData;
+	if (minutesLeft > 0 || secondsLeft > 0){suddenDeath = false; suddenDeathAlpha = 1;}
+	
+	if (parseInt(minutesLeft)*60 + parseInt(secondsLeftPlusZeroData) == 60 && !mute){
+		sfxTimeWarning.play();
+		clockHeight = 266;
+	}
+	//log("CLOCK timeLimit:" + timeLimit.toString());
+	var timerleft = parseInt(minutesLeft)*60 + parseInt(secondsLeftPlusZeroData);
+	//log("timeleft:" + timerleft);
+	if (parseInt(minutesLeft)*60 + parseInt(secondsLeftPlusZeroData) == 0 && suddenDeath == false && blackScore == whiteScore && timeLimit == true && !mute){
+		sfxSuddenDeath.play();
+		suddenDeath = true;
+	}
+	
+	//Border (blink on flag stolen)
+	if (myPlayer.team == "white" && bagRed.captured == true && blinkOn == false){
+		canvas.style.margin = "-5px";
+		canvas.style.border = "5px solid #FF0000";
+		blinkOn = true;
+	}
+	else if (myPlayer.team == "black" && bagBlue.captured == true && blinkOn == false){
+		canvas.style.margin = "-5px";
+		canvas.style.border = "5px solid #FF0000";
+		blinkOn = true;
+	}
+	else {
+		determineBorderStyle();
+		blinkOn = false;
+	}
+
+});
+
+function determineBorderStyle(){
+	canvas.style.margin = "-2px";
+	canvas.style.border = "2px solid #000000";
+	if (myPlayer.health >= 175){
+		canvas.style.margin = "-5px";
+		canvas.style.border = "5px solid #005b98";						
+	}
+	else if (myPlayer.health >= 150){
+		canvas.style.margin = "-4px";
+		canvas.style.border = "4px solid #005b98";						
+	}
+	else if (myPlayer.health >= 125){
+		canvas.style.margin = "-3px";
+		canvas.style.border = "3px solid #005b98";						
+	}
+	else if (myPlayer.health >= 101){
+		canvas.style.margin = "-1px";
+		canvas.style.border = "1px solid #005b98";			
+	}
+}
 
 socket.on('signInResponse', function(data){
 	if(data.success){

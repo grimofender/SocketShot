@@ -1,16 +1,27 @@
-var pickup = require('../entities/pickup.js');
-var block = require('../entities/block.js');
-var thug = require('../entities/thug.js');
-var player = require('../entities/player.js');
-var dataAccessFunctions = require('shared/data_access/dataAccessFunctions.js');
-var dataAccess = require('shared/data_access/dataAccess.js');
-var mapEngine = require('./mapEngine.js');
-const logEngine = require('shared/engines/logEngine.js');
+var pickup;
+var block;
+var thug;
+var player;
+var dataAccessFunctions;
+var dataAccess;
+var mapEngine;
+var logEngine;
+var gameServerEngine;
 
-var secondsSinceLastServerSync = syncServerWithDbInterval - 2;
-var secondsSinceOnlineTimestampUpdate = 0;
-var secondsSinceStaleRequestCheck = 0;
-var currentStreamingDay = new Date().getUTCDate();
+if(typeof exports == 'undefined'){
+	//pickup = 
+}
+else {
+	pickup = require('../entities/pickup.js');
+	block = require('../entities/block.js');
+	thug = require('../entities/thug.js');
+	player = require('../entities/player.js');
+	dataAccessFunctions = require('shared/data_access/dataAccessFunctions.js');
+	dataAccess = require('shared/data_access/dataAccess.js');
+	mapEngine = require('./mapEngine.js');
+	logEngine = require('shared/engines/logEngine.js');
+	gameServerEngine = require('./gameServerEngine.js');
+}
 
 var changeTeams = function(playerId){
 	var playerList = player.getPlayerList();
@@ -1017,32 +1028,8 @@ setInterval(
 				updateMisc.nextGameTimer = nextGameTimer;
 			}
 		}	
-			
-		//Server monitoring
-		secondsSinceLastServerSync++;
-		if (secondsSinceLastServerSync > syncServerWithDbInterval){
-			if (isWebServer){
-				dataAccessFunctions.checkForUnhealthyServers();
-			}
-			else {
-				dataAccessFunctions.syncGameServerWithDatabase();
-			}			
-			if (pregame == true && getNumPlayersInGame() >= 4){
-				restartGame();
-			}
 
-			secondsSinceLastServerSync = 0;
-		}		
 		
-		//Remove stale requests
-		secondsSinceStaleRequestCheck++;
-		if (secondsSinceStaleRequestCheck > staleRequestCheckInterval){
-			if (isWebServer){
-				dataAccessFunctions.removeStaleFriendRequests();
-				dataAccessFunctions.removeStalePartyRequests();
-			}
-			secondsSinceStaleRequestCheck = 0;
-		}
 		
 		//Set Player onlineTimestamp
 		secondsSinceOnlineTimestampUpdate++;
@@ -1060,6 +1047,9 @@ setInterval(
 	},
 	1000/1 //Ticks per second
 );
+var secondsSinceOnlineTimestampUpdate = 0;
+var secondsSinceStaleRequestCheck = 0;
+var currentStreamingDay = new Date().getUTCDate();
 
 //TIMER1 - EVERY FRAME timer1 tiemer1 tiemr1
 //------------------------------------------------------------------------------
@@ -1215,18 +1205,21 @@ var sendFullGameStatus = function(socketId){
 	SOCKET_LIST[socketId].emit('sendFullGameStatus', playerPack, thugPack, pickupPack, blockPack, miscPack); //Goes to a single player
 }
 
-
-module.exports.changeTeams = changeTeams;
-module.exports.spawnSafely = spawnSafely;
-module.exports.getEntityById = getEntityById;
-module.exports.getSafeCoordinates = getSafeCoordinates;
-module.exports.getNumPlayersInGame = getNumPlayersInGame;
-module.exports.processEntityPush = processEntityPush;
-module.exports.capture = capture;
-module.exports.sendCapturesToClient = sendCapturesToClient;
-module.exports.killScore = killScore;
-module.exports.ensureCorrectThugCount = ensureCorrectThugCount;
-module.exports.restartGame = restartGame;
-module.exports.assignSpectatorsToTeam = assignSpectatorsToTeam;
-module.exports.joinGame = joinGame;
-module.exports.sendFullGameStatus = sendFullGameStatus;
+if(typeof exports == 'undefined'){
+}
+else{
+	module.exports.changeTeams = changeTeams;
+	module.exports.spawnSafely = spawnSafely;
+	module.exports.getEntityById = getEntityById;
+	module.exports.getSafeCoordinates = getSafeCoordinates;
+	module.exports.getNumPlayersInGame = getNumPlayersInGame;
+	module.exports.processEntityPush = processEntityPush;
+	module.exports.capture = capture;
+	module.exports.sendCapturesToClient = sendCapturesToClient;
+	module.exports.killScore = killScore;
+	module.exports.ensureCorrectThugCount = ensureCorrectThugCount;
+	module.exports.restartGame = restartGame;
+	module.exports.assignSpectatorsToTeam = assignSpectatorsToTeam;
+	module.exports.joinGame = joinGame;
+	module.exports.sendFullGameStatus = sendFullGameStatus;
+}

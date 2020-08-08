@@ -1,5 +1,12 @@
-var pickup = require('../entities/pickup.js');
-var block = require('../entities/block.js');
+var pickup;
+var block;
+
+if(typeof exports == 'undefined'){
+}
+else {
+	pickup = require('../entities/pickup.js');
+	block = require('../entities/block.js');
+}
 
 var initializePickups = function(map){
 	pickup.clearPickupList();
@@ -364,5 +371,9 @@ var initializeBlocks = function(map){
 	
 }
 
-module.exports.initializePickups = initializePickups;
-module.exports.initializeBlocks = initializeBlocks;
+if(typeof exports == 'undefined'){
+}
+else {
+	module.exports.initializePickups = initializePickups;
+	module.exports.initializeBlocks = initializeBlocks;
+}

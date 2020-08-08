@@ -1,11 +1,23 @@
-var gameEngine = require('../engines/gameEngine.js');
-var thug = require('./thug.js');
-var block = require('./block.js');
-var pickup = require('./pickup.js');
-var entityHelpers = require('./_entityHelpers.js');
-var dataAccessFunctions = require('shared/data_access/dataAccessFunctions.js');
+var player = {};
+var gameEngine;
+var thug;
+var block;
+var pickup;
+var entityHelpers;
+var dataAccessFunctions;
 
-var Player = function(id, cognitoSub, name, team, partyId){
+if(typeof exports == 'undefined'){
+}
+else {
+	gameEngine = require('../engines/gameEngine.js');
+	thug = require('./thug.js');
+	block = require('./block.js');
+	pickup = require('./pickup.js');
+	entityHelpers = require('./_entityHelpers.js');
+	dataAccessFunctions = require('shared/data_access/dataAccessFunctions.js');
+}
+
+var EnginePlayer = function(id, cognitoSub, name, team, partyId){
 	var self = {
 		id:id,
 		cognitoSub:cognitoSub,
@@ -159,8 +171,8 @@ var Player = function(id, cognitoSub, name, team, partyId){
 				var hitTargets = [];
 				var blockHitTargets = [];
 				var organicHitTargets = [];
-				for (var i in Player.list){
-					var isHitTarget = entityHelpers.checkIfInLineOfShot(self, Player.list[i]);
+				for (var i in EnginePlayer.list){
+					var isHitTarget = entityHelpers.checkIfInLineOfShot(self, EnginePlayer.list[i]);
 					if (isHitTarget && isHitTarget != false){
 						hitTargets.push(isHitTarget);
 						organicHitTargets.push(isHitTarget);
@@ -502,20 +514,20 @@ var Player = function(id, cognitoSub, name, team, partyId){
 		///////////////////// COLLISION WITH OBSTACLES/PLAYERS /////////////////////////
 		
 		//Check collision with players
-		for (var i in Player.list){
-			if (Player.list[i].id != self.id  && Player.list[i].health > 0 && self.x + self.width > Player.list[i].x && self.x < Player.list[i].x + Player.list[i].width && self.y + self.height > Player.list[i].y && self.y < Player.list[i].y + Player.list[i].height){								
-				if (self.x == Player.list[i].x && self.y == Player.list[i].y){self.x -= 5; updatePlayerList.push({id:self.id,property:"x",value:self.x});} //Added to avoid math issues when entities are directly on top of each other (distance = 0)
-				var dx1 = self.x - Player.list[i].x;
-				var dy1 = self.y - Player.list[i].y;
+		for (var i in EnginePlayer.list){
+			if (EnginePlayer.list[i].id != self.id  && EnginePlayer.list[i].health > 0 && self.x + self.width > EnginePlayer.list[i].x && self.x < EnginePlayer.list[i].x + EnginePlayer.list[i].width && self.y + self.height > EnginePlayer.list[i].y && self.y < EnginePlayer.list[i].y + EnginePlayer.list[i].height){								
+				if (self.x == EnginePlayer.list[i].x && self.y == EnginePlayer.list[i].y){self.x -= 5; updatePlayerList.push({id:self.id,property:"x",value:self.x});} //Added to avoid math issues when entities are directly on top of each other (distance = 0)
+				var dx1 = self.x - EnginePlayer.list[i].x;
+				var dy1 = self.y - EnginePlayer.list[i].y;
 				var dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
 				var ax1 = dx1/dist1;
 				var ay1 = dy1/dist1;
 				if (dist1 < 40){				
 					if (self.boosting > 0){  //melee boost collision bash
-						Player.list[i].pushSpeed = 20;
-						Player.list[i].pushDir = self.boostingDir;
-						if (self.team != Player.list[i].team){
-							Player.list[i].health -= boostDamage;
+						EnginePlayer.list[i].pushSpeed = 20;
+						EnginePlayer.list[i].pushDir = self.boostingDir;
+						if (self.team != EnginePlayer.list[i].team){
+							EnginePlayer.list[i].health -= boostDamage;
 						}
 						self.pushSpeed = 20;
 						self.boosting = -1;
@@ -524,57 +536,57 @@ var Player = function(id, cognitoSub, name, team, partyId){
 						//Assassinations
 						if (self.boostingDir == 1){
 							self.pushDir = 5;
-							if ((Player.list[i].shootingDir == 1 || Player.list[i].shootingDir == 8 || Player.list[i].shootingDir == 2) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 1 || EnginePlayer.list[i].shootingDir == 8 || EnginePlayer.list[i].shootingDir == 2) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 2){
 							self.pushDir = 6;
-							if ((Player.list[i].shootingDir == 1 || Player.list[i].shootingDir == 2 || Player.list[i].shootingDir == 3) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 1 || EnginePlayer.list[i].shootingDir == 2 || EnginePlayer.list[i].shootingDir == 3) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 3){
 							self.pushDir = 7;
-							if ((Player.list[i].shootingDir == 2 || Player.list[i].shootingDir == 3 || Player.list[i].shootingDir == 4) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 2 || EnginePlayer.list[i].shootingDir == 3 || EnginePlayer.list[i].shootingDir == 4) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 4){
 							self.pushDir = 8;
-							if ((Player.list[i].shootingDir == 3 || Player.list[i].shootingDir == 4 || Player.list[i].shootingDir == 5) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 3 || EnginePlayer.list[i].shootingDir == 4 || EnginePlayer.list[i].shootingDir == 5) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 5){
 							self.pushDir = 1;
-							if ((Player.list[i].shootingDir == 4 || Player.list[i].shootingDir == 5 || Player.list[i].shootingDir == 6) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 4 || EnginePlayer.list[i].shootingDir == 5 || EnginePlayer.list[i].shootingDir == 6) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 6){
 							self.pushDir = 2;
-							if ((Player.list[i].shootingDir == 5 || Player.list[i].shootingDir == 6 || Player.list[i].shootingDir == 7) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 5 || EnginePlayer.list[i].shootingDir == 6 || EnginePlayer.list[i].shootingDir == 7) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 7){
 							self.pushDir = 3;
-							if ((Player.list[i].shootingDir == 6 || Player.list[i].shootingDir == 7 || Player.list[i].shootingDir == 8) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 6 || EnginePlayer.list[i].shootingDir == 7 || EnginePlayer.list[i].shootingDir == 8) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
 						else if (self.boostingDir == 8){
 							self.pushDir = 4;
-							if ((Player.list[i].shootingDir == 7 || Player.list[i].shootingDir == 8 || Player.list[i].shootingDir == 1) && self.team != Player.list[i].team){
-								Player.list[i].health = 0;
+							if ((EnginePlayer.list[i].shootingDir == 7 || EnginePlayer.list[i].shootingDir == 8 || EnginePlayer.list[i].shootingDir == 1) && self.team != EnginePlayer.list[i].team){
+								EnginePlayer.list[i].health = 0;
 							}
 						}
-						updatePlayerList.push({id:Player.list[i].id,property:"health",value:Player.list[i].health})
-						Player.list[i].healDelay = healDelayTime;
-						entityHelpers.sprayBloodOntoTarget(self.boostingDir, Player.list[i].x, Player.list[i].y, Player.list[i].id);
-						if (Player.list[i].health <= 0){
-							Player.list[i].kill(self);
+						updatePlayerList.push({id:EnginePlayer.list[i].id,property:"health",value:EnginePlayer.list[i].health})
+						EnginePlayer.list[i].healDelay = healDelayTime;
+						entityHelpers.sprayBloodOntoTarget(self.boostingDir, EnginePlayer.list[i].x, EnginePlayer.list[i].y, EnginePlayer.list[i].id);
+						if (EnginePlayer.list[i].health <= 0){
+							EnginePlayer.list[i].kill(self);
 						}
 
 					}
@@ -920,7 +932,7 @@ var Player = function(id, cognitoSub, name, team, partyId){
 					
 		//Damage push
 		self.pushSpeed += damageInflicted/8 * damagePushScale;
-		self.pushDir = Player.list[shooter.id].shootingDir;			
+		self.pushDir = EnginePlayer.list[shooter.id].shootingDir;			
 		updatePlayerList.push({id:self.id,property:"pushSpeed",value:self.pushSpeed});
 		updatePlayerList.push({id:self.id,property:"pushDir",value:self.pushDir});
 
@@ -1078,7 +1090,7 @@ var Player = function(id, cognitoSub, name, team, partyId){
 		gameEngine.sendFullGameStatus(self.id);
 	}
 	
-	Player.list[id] = self;
+	EnginePlayer.list[id] = self;
 
 	logg("Player " + self.name + " has entered the game.");
 	var teamName = self.team;
@@ -1100,7 +1112,7 @@ var Player = function(id, cognitoSub, name, team, partyId){
 	return self;
 } //End Player function
 
-Player.list = [];
+EnginePlayer.list = [];
 
 function gunCycle(player, forwards){
 	if (player.reloading > 0){
@@ -1314,12 +1326,12 @@ function gunSwap(player){
 	}
 }
 
-Player.onConnect = function(socket, cognitoSub, name, team, partyId){
-	var player = Player(socket.id, cognitoSub, name, team, partyId);
+EnginePlayer.onConnect = function(socket, cognitoSub, name, team, partyId){
+	var player = EnginePlayer(socket.id, cognitoSub, name, team, partyId);
 	gameEngine.ensureCorrectThugCount();
 
 	socket.on('keyPress', function(data){
-		Player.list[socket.id].afk = AfkFramesAllowed;
+		EnginePlayer.list[socket.id].afk = AfkFramesAllowed;
 		if (player.health > 0 && player.team != "none"){
 			var discharge = false;
 			if(data.inputId === 87){player.pressingW = data.state;} //W
@@ -1528,67 +1540,67 @@ Player.onConnect = function(socket, cognitoSub, name, team, partyId){
 	});
 	
 	socket.on('purchase', function(data){
-		if (data.selection == 1 && Player.list[data.playerId].cash >= shop.price1){
-			Player.list[data.playerId].cash -= shop.price1;
-			updatePlayerList.push({id:data.playerId,property:"cash",value:Player.list[data.playerId].cash});								
-			Player.list[data.playerId].weapon = 3;
-			updatePlayerList.push({id:data.playerId,property:"weapon",value:Player.list[data.playerId].weapon});								
-			if (Player.list[data.playerId].MGClip <= 0 && Player.list[data.playerId].MGAmmo <= 0){
-				Player.list[data.playerId].MGClip += 30;
-				Player.list[data.playerId].MGAmmo += 30;
-				updatePlayerList.push({id:data.playerId,property:"MGClip",value:Player.list[data.playerId].MGClip});								
-				updatePlayerList.push({id:data.playerId,property:"MGAmmo",value:Player.list[data.playerId].MGAmmo});								
+		if (data.selection == 1 && EnginePlayer.list[data.playerId].cash >= shop.price1){
+			EnginePlayer.list[data.playerId].cash -= shop.price1;
+			updatePlayerList.push({id:data.playerId,property:"cash",value:EnginePlayer.list[data.playerId].cash});								
+			EnginePlayer.list[data.playerId].weapon = 3;
+			updatePlayerList.push({id:data.playerId,property:"weapon",value:EnginePlayer.list[data.playerId].weapon});								
+			if (EnginePlayer.list[data.playerId].MGClip <= 0 && EnginePlayer.list[data.playerId].MGAmmo <= 0){
+				EnginePlayer.list[data.playerId].MGClip += 30;
+				EnginePlayer.list[data.playerId].MGAmmo += 30;
+				updatePlayerList.push({id:data.playerId,property:"MGClip",value:EnginePlayer.list[data.playerId].MGClip});								
+				updatePlayerList.push({id:data.playerId,property:"MGAmmo",value:EnginePlayer.list[data.playerId].MGAmmo});								
 			}
 			else {
-				Player.list[data.playerId].MGAmmo += 60;
-				updatePlayerList.push({id:data.playerId,property:"MGAmmo",value:Player.list[data.playerId].MGAmmo});								
+				EnginePlayer.list[data.playerId].MGAmmo += 60;
+				updatePlayerList.push({id:data.playerId,property:"MGAmmo",value:EnginePlayer.list[data.playerId].MGAmmo});								
 			}
 		}		
-		else if (data.selection == 2 && Player.list[data.playerId].cash >= shop.price2){
-			Player.list[data.playerId].cash -= shop.price2;
-			updatePlayerList.push({id:data.playerId,property:"cash",value:Player.list[data.playerId].cash});								
-			Player.list[data.playerId].weapon = 4;
-			updatePlayerList.push({id:data.playerId,property:"weapon",value:Player.list[data.playerId].weapon});								
-			if (Player.list[data.playerId].SGClip <= 0 && Player.list[data.playerId].SGAmmo <= 0){
-				Player.list[data.playerId].SGClip += 12;
-				Player.list[data.playerId].SGAmmo += 24;
-				updatePlayerList.push({id:data.playerId,property:"SGClip",value:Player.list[data.playerId].SGClip});								
-				updatePlayerList.push({id:data.playerId,property:"SGAmmo",value:Player.list[data.playerId].SGAmmo});								
+		else if (data.selection == 2 && EnginePlayer.list[data.playerId].cash >= shop.price2){
+			EnginePlayer.list[data.playerId].cash -= shop.price2;
+			updatePlayerList.push({id:data.playerId,property:"cash",value:EnginePlayer.list[data.playerId].cash});								
+			EnginePlayer.list[data.playerId].weapon = 4;
+			updatePlayerList.push({id:data.playerId,property:"weapon",value:EnginePlayer.list[data.playerId].weapon});								
+			if (EnginePlayer.list[data.playerId].SGClip <= 0 && EnginePlayer.list[data.playerId].SGAmmo <= 0){
+				EnginePlayer.list[data.playerId].SGClip += 12;
+				EnginePlayer.list[data.playerId].SGAmmo += 24;
+				updatePlayerList.push({id:data.playerId,property:"SGClip",value:EnginePlayer.list[data.playerId].SGClip});								
+				updatePlayerList.push({id:data.playerId,property:"SGAmmo",value:EnginePlayer.list[data.playerId].SGAmmo});								
 			}
 			else {
-				Player.list[data.playerId].SGAmmo += 36;
-				updatePlayerList.push({id:data.playerId,property:"SGAmmo",value:Player.list[data.playerId].SGAmmo});								
+				EnginePlayer.list[data.playerId].SGAmmo += 36;
+				updatePlayerList.push({id:data.playerId,property:"SGAmmo",value:EnginePlayer.list[data.playerId].SGAmmo});								
 			}
 		}		
-		else if (data.selection == 3 && Player.list[data.playerId].cash >= shop.price3){
-			Player.list[data.playerId].cash -= shop.price3;
-			updatePlayerList.push({id:data.playerId,property:"cash",value:Player.list[data.playerId].cash});								
-			Player.list[data.playerId].weapon = 2;
-			updatePlayerList.push({id:data.playerId,property:"weapon",value:Player.list[data.playerId].weapon});								
-			if (Player.list[data.playerId].DPClip <= 0 && Player.list[data.playerId].DPAmmo <= 0){
-				Player.list[data.playerId].DPClip += 20;
-				Player.list[data.playerId].DPAmmo += 20;
-				updatePlayerList.push({id:data.playerId,property:"DPClip",value:Player.list[data.playerId].DPClip});								
-				updatePlayerList.push({id:data.playerId,property:"DPAmmo",value:Player.list[data.playerId].DPAmmo});								
+		else if (data.selection == 3 && EnginePlayer.list[data.playerId].cash >= shop.price3){
+			EnginePlayer.list[data.playerId].cash -= shop.price3;
+			updatePlayerList.push({id:data.playerId,property:"cash",value:EnginePlayer.list[data.playerId].cash});								
+			EnginePlayer.list[data.playerId].weapon = 2;
+			updatePlayerList.push({id:data.playerId,property:"weapon",value:EnginePlayer.list[data.playerId].weapon});								
+			if (EnginePlayer.list[data.playerId].DPClip <= 0 && EnginePlayer.list[data.playerId].DPAmmo <= 0){
+				EnginePlayer.list[data.playerId].DPClip += 20;
+				EnginePlayer.list[data.playerId].DPAmmo += 20;
+				updatePlayerList.push({id:data.playerId,property:"DPClip",value:EnginePlayer.list[data.playerId].DPClip});								
+				updatePlayerList.push({id:data.playerId,property:"DPAmmo",value:EnginePlayer.list[data.playerId].DPAmmo});								
 			}
 			else {
-				Player.list[data.playerId].DPAmmo += 40;
-				updatePlayerList.push({id:data.playerId,property:"DPAmmo",value:Player.list[data.playerId].DPAmmo});								
+				EnginePlayer.list[data.playerId].DPAmmo += 40;
+				updatePlayerList.push({id:data.playerId,property:"DPAmmo",value:EnginePlayer.list[data.playerId].DPAmmo});								
 			}
 		}		
-		else if (data.selection == 4 && Player.list[data.playerId].cash >= shop.price4){
-			Player.list[data.playerId].cash -= shop.price4;
-			updatePlayerList.push({id:data.playerId,property:"cash",value:Player.list[data.playerId].cash});								
-			Player.list[data.playerId].health += 75;
-			if (Player.list[data.playerId].health > 175){
-				Player.list[data.playerId].health = 175;
+		else if (data.selection == 4 && EnginePlayer.list[data.playerId].cash >= shop.price4){
+			EnginePlayer.list[data.playerId].cash -= shop.price4;
+			updatePlayerList.push({id:data.playerId,property:"cash",value:EnginePlayer.list[data.playerId].cash});								
+			EnginePlayer.list[data.playerId].health += 75;
+			if (EnginePlayer.list[data.playerId].health > 175){
+				EnginePlayer.list[data.playerId].health = 175;
 			}
-			updatePlayerList.push({id:data.playerId,property:"health",value:Player.list[data.playerId].health});								
+			updatePlayerList.push({id:data.playerId,property:"health",value:EnginePlayer.list[data.playerId].health});								
 		}		
-		else if (data.selection == 5 && Player.list[data.playerId].cash >= shop.price5 && Player.list[data.playerId].hasBattery < 5){
-			Player.list[data.playerId].cash -= shop.price5;
-			updatePlayerList.push({id:data.playerId,property:"cash",value:Player.list[data.playerId].cash});								
-			Player.list[data.playerId].hasBattery += 1;
+		else if (data.selection == 5 && EnginePlayer.list[data.playerId].cash >= shop.price5 && EnginePlayer.list[data.playerId].hasBattery < 5){
+			EnginePlayer.list[data.playerId].cash -= shop.price5;
+			updatePlayerList.push({id:data.playerId,property:"cash",value:EnginePlayer.list[data.playerId].cash});								
+			EnginePlayer.list[data.playerId].hasBattery += 1;
 		}				
 	});
 
@@ -2091,48 +2103,48 @@ Player.onConnect = function(socket, cognitoSub, name, team, partyId){
 	});	
 
 	
-}//End Player.onConnect
+}//End EnginePlayer.onConnect
 
 function reload(playerId){
-	if ((Player.list[playerId].weapon == 3 && Player.list[playerId].MGClip <= 0 && Player.list[playerId].MGAmmo <= 0)){			
-			Player.list[playerId].weapon = 1;
-			updatePlayerList.push({id:playerId,property:"weapon",value:Player.list[playerId].weapon});		
+	if ((EnginePlayer.list[playerId].weapon == 3 && EnginePlayer.list[playerId].MGClip <= 0 && EnginePlayer.list[playerId].MGAmmo <= 0)){			
+			EnginePlayer.list[playerId].weapon = 1;
+			updatePlayerList.push({id:playerId,property:"weapon",value:EnginePlayer.list[playerId].weapon});		
 			return;
 	}
-	else if ((Player.list[playerId].weapon == 2 && Player.list[playerId].DPClip <= 0 && Player.list[playerId].DPAmmo <= 0)){
-			Player.list[playerId].weapon = 1;
-			updatePlayerList.push({id:playerId,property:"weapon",value:Player.list[playerId].weapon});		
+	else if ((EnginePlayer.list[playerId].weapon == 2 && EnginePlayer.list[playerId].DPClip <= 0 && EnginePlayer.list[playerId].DPAmmo <= 0)){
+			EnginePlayer.list[playerId].weapon = 1;
+			updatePlayerList.push({id:playerId,property:"weapon",value:EnginePlayer.list[playerId].weapon});		
 			return;
 	}
-	else if ((Player.list[playerId].weapon == 4 && Player.list[playerId].SGClip <= 0 && Player.list[playerId].SGAmmo <= 0)){
-			Player.list[playerId].weapon = 1;
-			updatePlayerList.push({id:playerId,property:"weapon",value:Player.list[playerId].weapon});		
+	else if ((EnginePlayer.list[playerId].weapon == 4 && EnginePlayer.list[playerId].SGClip <= 0 && EnginePlayer.list[playerId].SGAmmo <= 0)){
+			EnginePlayer.list[playerId].weapon = 1;
+			updatePlayerList.push({id:playerId,property:"weapon",value:EnginePlayer.list[playerId].weapon});		
 			return;
 	}
-	if (Player.list[playerId].weapon == 1 && Player.list[playerId].PClip >= 15){return;}
-	else if ((Player.list[playerId].weapon == 3 && Player.list[playerId].MGClip >= MGClipSize) || (Player.list[playerId].weapon == 3 && Player.list[playerId].MGAmmo <= 0)){return;}
-	else if ((Player.list[playerId].weapon == 2 && Player.list[playerId].DPClip >= DPClipSize) || (Player.list[playerId].weapon == 2 && Player.list[playerId].DPAmmo <= 0)){return;}
-	else if ((Player.list[playerId].weapon == 4 && Player.list[playerId].SGClip >= SGClipSize) || (Player.list[playerId].weapon == 4 && Player.list[playerId].SGAmmo <= 0)){return;}
-	if (Player.list[playerId].reloading <= 0){
-		if (Player.list[playerId].weapon == 1){
-			Player.list[playerId].reloading = 60;
-			updatePlayerList.push({id:playerId,property:"reloading",value:Player.list[playerId].reloading});
+	if (EnginePlayer.list[playerId].weapon == 1 && EnginePlayer.list[playerId].PClip >= 15){return;}
+	else if ((EnginePlayer.list[playerId].weapon == 3 && EnginePlayer.list[playerId].MGClip >= MGClipSize) || (EnginePlayer.list[playerId].weapon == 3 && EnginePlayer.list[playerId].MGAmmo <= 0)){return;}
+	else if ((EnginePlayer.list[playerId].weapon == 2 && EnginePlayer.list[playerId].DPClip >= DPClipSize) || (EnginePlayer.list[playerId].weapon == 2 && EnginePlayer.list[playerId].DPAmmo <= 0)){return;}
+	else if ((EnginePlayer.list[playerId].weapon == 4 && EnginePlayer.list[playerId].SGClip >= SGClipSize) || (EnginePlayer.list[playerId].weapon == 4 && EnginePlayer.list[playerId].SGAmmo <= 0)){return;}
+	if (EnginePlayer.list[playerId].reloading <= 0){
+		if (EnginePlayer.list[playerId].weapon == 1){
+			EnginePlayer.list[playerId].reloading = 60;
+			updatePlayerList.push({id:playerId,property:"reloading",value:EnginePlayer.list[playerId].reloading});
 		}					
-		else if (Player.list[playerId].weapon == 2){
-			Player.list[playerId].reloading = 80;
-			updatePlayerList.push({id:playerId,property:"reloading",value:Player.list[playerId].reloading});
+		else if (EnginePlayer.list[playerId].weapon == 2){
+			EnginePlayer.list[playerId].reloading = 80;
+			updatePlayerList.push({id:playerId,property:"reloading",value:EnginePlayer.list[playerId].reloading});
 		}					
-		else if (Player.list[playerId].weapon == 3){
-			Player.list[playerId].reloading = 114;
-			updatePlayerList.push({id:playerId,property:"reloading",value:Player.list[playerId].reloading});
+		else if (EnginePlayer.list[playerId].weapon == 3){
+			EnginePlayer.list[playerId].reloading = 114;
+			updatePlayerList.push({id:playerId,property:"reloading",value:EnginePlayer.list[playerId].reloading});
 		}					
-		else if (Player.list[playerId].weapon == 4){
-			if (Player.list[playerId].fireRate > 0){
-				Player.list[playerId].bufferReload = true;
+		else if (EnginePlayer.list[playerId].weapon == 4){
+			if (EnginePlayer.list[playerId].fireRate > 0){
+				EnginePlayer.list[playerId].bufferReload = true;
 			}
 			else {
-				Player.list[playerId].reloading = 30;
-				updatePlayerList.push({id:playerId,property:"reloading",value:Player.list[playerId].reloading});
+				EnginePlayer.list[playerId].reloading = 30;
+				updatePlayerList.push({id:playerId,property:"reloading",value:EnginePlayer.list[playerId].reloading});
 			}
 		}					
 	}	
@@ -2209,22 +2221,22 @@ function Discharge(player){
 	player.liveShot = true;
 }
 
-Player.onDisconnect = function(id){
-	if (Player.list[id]){
-		logg(Player.list[id].name + " disconnected.");
-		if (Player.list[id].holdingBag == true){
-			if (Player.list[id].team == "white"){
+EnginePlayer.onDisconnect = function(id){
+	if (EnginePlayer.list[id]){
+		logg(EnginePlayer.list[id].name + " disconnected.");
+		if (EnginePlayer.list[id].holdingBag == true){
+			if (EnginePlayer.list[id].team == "white"){
 				bagBlue.captured = false;
 				updateMisc.bagBlue = bagBlue;
 			}
-			else if (Player.list[id].team == "black"){
+			else if (EnginePlayer.list[id].team == "black"){
 				bagRed.captured = false;
 				updateMisc.bagRed = bagRed;
 			}
 		}
-		sendChatToAll(Player.list[id].name + " has disconnected.");
+		sendChatToAll(EnginePlayer.list[id].name + " has disconnected.");
 	}
-	delete Player.list[id];
+	delete EnginePlayer.list[id];
 	for(var i in SOCKET_LIST){
 		SOCKET_LIST[i].emit('removePlayer', id);
 	}	
@@ -2234,9 +2246,9 @@ Player.onDisconnect = function(id){
 }
 
 function getPlayerFromCognitoSub(searchingCognitoSub){
-	for (var p in Player.list){
-		if (Player.list[p].cognitoSub == searchingCognitoSub){
-			return Player.list[p].id;
+	for (var p in EnginePlayer.list){
+		if (EnginePlayer.list[p].cognitoSub == searchingCognitoSub){
+			return EnginePlayer.list[p].id;
 		}
 	}
 	return null;
@@ -2244,119 +2256,119 @@ function getPlayerFromCognitoSub(searchingCognitoSub){
 
 //eventTrigger Database push update db
 function playerEvent(playerId, event){
-	if (!gameOver && Player.list[playerId]){
+	if (!gameOver && EnginePlayer.list[playerId]){
 		if (event == "hit"){
-			Player.list[playerId].cash += hitCash;
-			Player.list[playerId].cashEarnedThisGame += hitCash;
-			updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			EnginePlayer.list[playerId].cash += hitCash;
+			EnginePlayer.list[playerId].cashEarnedThisGame += hitCash;
+			updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 		}
 		else if (event == "kill"){
-			Player.list[playerId].kills++;			
-			Player.list[playerId].cash+=killCash;
-			Player.list[playerId].cashEarnedThisGame+=killCash;
-			updatePlayerList.push({id:playerId,property:"kills",value:Player.list[playerId].kills});
-			updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			EnginePlayer.list[playerId].kills++;			
+			EnginePlayer.list[playerId].cash+=killCash;
+			EnginePlayer.list[playerId].cashEarnedThisGame+=killCash;
+			updatePlayerList.push({id:playerId,property:"kills",value:EnginePlayer.list[playerId].kills});
+			updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 			updateNotificationList.push({text:"+$" + killCash + " - Enemy Killed",playerId:playerId});
 		}
 		else if (event == "multikill"){
-			if (Player.list[playerId].multikill == 2){
-				Player.list[playerId].cash+=doubleKillCash;
-				Player.list[playerId].cashEarnedThisGame+=doubleKillCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			if (EnginePlayer.list[playerId].multikill == 2){
+				EnginePlayer.list[playerId].cash+=doubleKillCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=doubleKillCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**DOUBLE KILL!!**",playerId:playerId});				
 			}
-			else if (Player.list[playerId].multikill == 3){
-				Player.list[playerId].cash+=tripleKillCash;
-				Player.list[playerId].cashEarnedThisGame+=tripleKillCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			else if (EnginePlayer.list[playerId].multikill == 3){
+				EnginePlayer.list[playerId].cash+=tripleKillCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=tripleKillCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**TRIPLE KILL!!!**",playerId:playerId});				
 			}
-			else if (Player.list[playerId].multikill >= 4){
-				Player.list[playerId].cash+=quadKillCash;
-				Player.list[playerId].cashEarnedThisGame+=quadKillCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			else if (EnginePlayer.list[playerId].multikill >= 4){
+				EnginePlayer.list[playerId].cash+=quadKillCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=quadKillCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**OVERKILL!!!!**",playerId:playerId});				
 			}
 		}
 		else if (event == "spree"){
-			if (Player.list[playerId].spree == 5){
-				Player.list[playerId].cash+=spreeCash;
-				Player.list[playerId].cashEarnedThisGame+=spreeCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			if (EnginePlayer.list[playerId].spree == 5){
+				EnginePlayer.list[playerId].cash+=spreeCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=spreeCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**KILLING SPREE!!**",playerId:playerId});				
 			}		
-			else if (Player.list[playerId].spree == 10){
-				Player.list[playerId].cash+=frenzyCash;
-				Player.list[playerId].cashEarnedThisGame+=frenzyCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			else if (EnginePlayer.list[playerId].spree == 10){
+				EnginePlayer.list[playerId].cash+=frenzyCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=frenzyCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**GENOCIDE!!**",playerId:playerId});				
 			}		
-			else if (Player.list[playerId].spree == 15){
-				Player.list[playerId].cash+=rampageCash;
-				Player.list[playerId].cashEarnedThisGame+=rampageCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			else if (EnginePlayer.list[playerId].spree == 15){
+				EnginePlayer.list[playerId].cash+=rampageCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=rampageCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**EXTERMINATION!!**",playerId:playerId});				
 			}		
-			else if (Player.list[playerId].spree == 20){
-				Player.list[playerId].cash+=unbelievableCash;
-				Player.list[playerId].cashEarnedThisGame+=unbelievableCash;
-				updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			else if (EnginePlayer.list[playerId].spree == 20){
+				EnginePlayer.list[playerId].cash+=unbelievableCash;
+				EnginePlayer.list[playerId].cashEarnedThisGame+=unbelievableCash;
+				updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+				updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 				updateNotificationList.push({text:"**NEXT HITLER!!**",playerId:playerId});				
 			}		
 		}
 		else if (event == "killThug"){
-			Player.list[playerId].cash+=thugCash;
-			Player.list[playerId].cashEarnedThisGame+=thugCash;
-			updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			EnginePlayer.list[playerId].cash+=thugCash;
+			EnginePlayer.list[playerId].cashEarnedThisGame+=thugCash;
+			updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 			updateNotificationList.push({text:"+$" + thugCash + " - Thug Killed",playerId:playerId});
 		}
 		else if (event == "death"){
-			Player.list[playerId].deaths++;
-			if (Player.list[playerId]){
-				updatePlayerList.push({id:playerId,property:"deaths",value:Player.list[playerId].deaths});
+			EnginePlayer.list[playerId].deaths++;
+			if (EnginePlayer.list[playerId]){
+				updatePlayerList.push({id:playerId,property:"deaths",value:EnginePlayer.list[playerId].deaths});
 			}
 		}
 		else if (event == "benedict"){
 			updateNotificationList.push({text:"Benedict!",playerId:playerId});
-			dataAccessFunctions.dbUserUpdate("inc", Player.list[playerId].cognitoSub, {benedicts: 1});
+			dataAccessFunctions.dbUserUpdate("inc", EnginePlayer.list[playerId].cognitoSub, {benedicts: 1});
 		}
 		else if (event == "steal"){
-			Player.list[playerId].steals++;
-			Player.list[playerId].cash += stealCash;
-			Player.list[playerId].cashEarnedThisGame += stealCash;
-			updatePlayerList.push({id:playerId,property:"steals",value:Player.list[playerId].steals});
-			updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			EnginePlayer.list[playerId].steals++;
+			EnginePlayer.list[playerId].cash += stealCash;
+			EnginePlayer.list[playerId].cashEarnedThisGame += stealCash;
+			updatePlayerList.push({id:playerId,property:"steals",value:EnginePlayer.list[playerId].steals});
+			updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 			updateNotificationList.push({text:"+$" + stealCash + " - Bag Stolen",playerId:playerId});
 		}
 		else if (event == "return"){
-			Player.list[playerId].returns++;
-			Player.list[playerId].cash+=returnCash;
-			Player.list[playerId].cashEarnedThisGame+=returnCash;
-			updatePlayerList.push({id:playerId,property:"returns",value:Player.list[playerId].returns});
-			updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			EnginePlayer.list[playerId].returns++;
+			EnginePlayer.list[playerId].cash+=returnCash;
+			EnginePlayer.list[playerId].cashEarnedThisGame+=returnCash;
+			updatePlayerList.push({id:playerId,property:"returns",value:EnginePlayer.list[playerId].returns});
+			updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 			updateNotificationList.push({text:"+$" + returnCash + " - Bag Returned",playerId:playerId});
 		}
 		else if (event == "capture"){
-			Player.list[playerId].holdingBag = false;
+			EnginePlayer.list[playerId].holdingBag = false;
 			updatePlayerList.push({id:playerId,property:"holdingBag",value:false});
-			Player.list[playerId].captures++;
-			Player.list[playerId].cash+=captureCash;
-			Player.list[playerId].cashEarnedThisGame+=captureCash;
-			updatePlayerList.push({id:playerId,property:"captures",value:Player.list[playerId].captures});
-			updatePlayerList.push({id:playerId,property:"cash",value:Player.list[playerId].cash});
-			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:Player.list[playerId].cashEarnedThisGame});
+			EnginePlayer.list[playerId].captures++;
+			EnginePlayer.list[playerId].cash+=captureCash;
+			EnginePlayer.list[playerId].cashEarnedThisGame+=captureCash;
+			updatePlayerList.push({id:playerId,property:"captures",value:EnginePlayer.list[playerId].captures});
+			updatePlayerList.push({id:playerId,property:"cash",value:EnginePlayer.list[playerId].cash});
+			updatePlayerList.push({id:playerId,property:"cashEarnedThisGame",value:EnginePlayer.list[playerId].cashEarnedThisGame});
 			if (!gameOver){
 				updateNotificationList.push({text:"+$" + captureCash + " - BAG CAPTURED!!",playerId:playerId});
 			}
@@ -2366,20 +2378,20 @@ function playerEvent(playerId, event){
 
 
 var connect = function(socket, cognitoSub, username, team, partyId){
-	Player.onConnect(socket, cognitoSub, username, team, partyId);
+	EnginePlayer.onConnect(socket, cognitoSub, username, team, partyId);
 }
 
 var getPlayerList = function(){
-	return Player.list;
+	return EnginePlayer.list;
 }
 
 var getPlayerById = function(id){
-    return Player.list[id];
+    return EnginePlayer.list[id];
 }
 
 var playerDisconnect = function(id){
-    if (Player.list[id])
-        Player.onDisconnect(id);
+    if (EnginePlayer.list[id])
+        EnginePlayer.onDisconnect(id);
 }
 
 function sendChatToAll(text){
@@ -2388,25 +2400,34 @@ function sendChatToAll(text){
 	}
 }
 function runPlayerEngines(){
-	for (var i in Player.list){
-		if (Player.list[i].team != "none")
-		Player.list[i].engine();
+	for (var i in EnginePlayer.list){
+		if (EnginePlayer.list[i].team != "none")
+		EnginePlayer.list[i].engine();
 	}		
 	
 }
 
 var isSafeCoords = function(potentialX, potentialY, team){
-	for (var i in Player.list){
-		if (Player.list[i].team != team && Player.list[i].health > 0 && potentialX >= Player.list[i].x - threatSpawnRange && potentialX <= Player.list[i].x + threatSpawnRange && potentialY >= Player.list[i].y - threatSpawnRange && potentialY <= Player.list[i].y + threatSpawnRange){																		
+	for (var i in EnginePlayer.list){
+		if (EnginePlayer.list[i].team != team && EnginePlayer.list[i].health > 0 && potentialX >= EnginePlayer.list[i].x - threatSpawnRange && potentialX <= EnginePlayer.list[i].x + threatSpawnRange && potentialY >= EnginePlayer.list[i].y - threatSpawnRange && potentialY <= EnginePlayer.list[i].y + threatSpawnRange){																		
 			return false;
 		}
 	}
 	return true;
 }
-
-module.exports.connect = connect;
-module.exports.getPlayerList = getPlayerList;
-module.exports.playerDisconnect = playerDisconnect; //onDisconnect
-module.exports.getPlayerById = getPlayerById;
-module.exports.runPlayerEngines = runPlayerEngines;
-module.exports.isSafeCoords = isSafeCoords;
+if(typeof exports == 'undefined'){
+	player.connect = connect;
+	player.getPlayerList = getPlayerList;
+	player.playerDisconnect = playerDisconnect; //onDisconnect
+	player.getPlayerById = getPlayerById;
+	player.runPlayerEngines = runPlayerEngines;
+	player.isSafeCoords = isSafeCoords;
+}
+else {
+	module.exports.connect = connect;
+	module.exports.getPlayerList = getPlayerList;
+	module.exports.playerDisconnect = playerDisconnect; //onDisconnect
+	module.exports.getPlayerById = getPlayerById;
+	module.exports.runPlayerEngines = runPlayerEngines;
+	module.exports.isSafeCoords = isSafeCoords;
+}

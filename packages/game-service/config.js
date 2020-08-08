@@ -1,13 +1,14 @@
-global.express = require('express');
-global.app = express();
-global.serv = require('http').Server(app);
 
-
-global.fs = require('fs');
-global.util = require('util')
-
-global.config = require("./settings.json");
-
+if(typeof exports == 'undefined'){
+}
+else {
+	global.express = require('express');
+	global.app = express();
+	global.serv = require('http').Server(app);
+	global.fs = require('fs');
+	global.util = require('util')
+	global.config = require("./settings.json");
+}
 //--------------------------------SERVER CONFIGURATION-----------------------------------------------------
 global.debug = true;
 global.httpOnlyCookies = false;

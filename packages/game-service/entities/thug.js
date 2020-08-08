@@ -1,9 +1,18 @@
-var gameEngine = require('../engines/gameEngine.js');
-var block = require('./block.js');
-var entityHelpers = require('./_entityHelpers.js');
-var player = require('./player.js');
+var gameEngine;
+var block;
+var entityHelpers;
+var player;
 
-var Thug = function(id, team, x, y){
+if(typeof exports == 'undefined'){
+}
+else {
+	gameEngine = require('../engines/gameEngine.js');
+	block = require('./block.js');
+	entityHelpers = require('./_entityHelpers.js');
+	player = require('./player.js');
+}
+
+var EngineThug = function(id, team, x, y){
 	var self = {
 		id:id,
 		team:team,
@@ -23,7 +32,7 @@ var Thug = function(id, team, x, y){
 		pushDir:0,
 		pushSpeed:0,
 	};
-	Thug.list[id] = self;	
+	EngineThug.list[id] = self;	
 	
 	//Send to client
 	updateThugList.push({id:self.id,property:"team",value:self.team});
@@ -75,11 +84,11 @@ var Thug = function(id, team, x, y){
 		}
 	
 		//Check collision with thugs
-		for (var i in Thug.list){
-			if (Thug.list[i].id != self.id && Thug.list[i].health > 0 && self.x + self.width > Thug.list[i].x && self.x < Thug.list[i].x + Thug.list[i].width && self.y + self.height > Thug.list[i].y && self.y < Thug.list[i].y + Thug.list[i].height){								
-				if (self.x == Thug.list[i].x && self.y == Thug.list[i].y){self.x -= 5; updateThugList.push({id:self.id,property:"x",value:self.x});} //Added to avoid math issues when entities are directly on top of each other (distance = 0)
-				var dx1 = self.x - Thug.list[i].x;
-				var dy1 = self.y - Thug.list[i].y;
+		for (var i in EngineThug.list){
+			if (EngineThug.list[i].id != self.id && EngineThug.list[i].health > 0 && self.x + self.width > EngineThug.list[i].x && self.x < EngineThug.list[i].x + EngineThug.list[i].width && self.y + self.height > EngineThug.list[i].y && self.y < EngineThug.list[i].y + EngineThug.list[i].height){								
+				if (self.x == EngineThug.list[i].x && self.y == EngineThug.list[i].y){self.x -= 5; updateThugList.push({id:self.id,property:"x",value:self.x});} //Added to avoid math issues when entities are directly on top of each other (distance = 0)
+				var dx1 = self.x - EngineThug.list[i].x;
+				var dy1 = self.y - EngineThug.list[i].y;
 				var dist1 = Math.sqrt(dx1*dx1 + dy1*dy1);
 				var ax1 = dx1/dist1;
 				var ay1 = dy1/dist1;
@@ -132,8 +141,8 @@ var Thug = function(id, team, x, y){
 					checkIfClosestToThug(self, playerList[i]);
 				}
 			}
-			for (var i in Thug.list){
-				checkIfClosestToThug(self, Thug.list[i]);
+			for (var i in EngineThug.list){
+				checkIfClosestToThug(self, EngineThug.list[i]);
 			}			
 			self.reevaluateTargetTimer = 30;
 		}
@@ -154,7 +163,7 @@ var Thug = function(id, team, x, y){
 				target.healDelay += healDelayTime;
 				if (target.healDelay > healDelayTime){target.healDelay = healDelayTime;} //Ceiling on healDelay
 			}
-			else if (Thug.list[target.id]){updateThugList.push({id:target.id,property:"health",value:target.health});}
+			else if (EngineThug.list[target.id]){updateThugList.push({id:target.id,property:"health",value:target.health});}
 				
 			var bloodDir = 7;
 			if (target.x < self.x){
@@ -328,7 +337,7 @@ var Thug = function(id, team, x, y){
 	}
 
 }//End Thug		
-Thug.list = [];
+EngineThug.list = [];
 
 function checkIfClosestToThug(thug, target){
 	if (target.id != thug.id && target.team != thug.team){
@@ -357,27 +366,27 @@ function respawnThug(thug){
 
 var getThugList = function(){
 	var thugList = [];
-	for (var t in Thug.list){
-		thugList.push(Thug.list[t]);
+	for (var t in EngineThug.list){
+		thugList.push(EngineThug.list[t]);
 	}
     return thugList;
 }
 
 var getThugById = function(id){
-    return Thug.list[id];
+    return EngineThug.list[id];
 }
 
 var createThug = function(id, team, x, y){
-	Thug(id, team, x, y);
+	EngineThug(id, team, x, y);
 }
 
 var clearThugList = function(){
-	Thug.list = [];
+	EngineThug.list = [];
 }
 
 var isSafeCoords = function(potentialX, potentialY, team){
-	for (var i in Thug.list){
-		if (Thug.list[i].team != team && Thug.list[i].health > 0 && potentialX >= Thug.list[i].x - threatSpawnRange && potentialX <= Thug.list[i].x + threatSpawnRange && potentialY >= Thug.list[i].y - threatSpawnRange && potentialY <= Thug.list[i].y + threatSpawnRange){																		
+	for (var i in EngineThug.list){
+		if (EngineThug.list[i].team != team && EngineThug.list[i].health > 0 && potentialX >= EngineThug.list[i].x - threatSpawnRange && potentialX <= EngineThug.list[i].x + threatSpawnRange && potentialY >= EngineThug.list[i].y - threatSpawnRange && potentialY <= EngineThug.list[i].y + threatSpawnRange){																		
 			return false;
 		}
 	}
@@ -385,14 +394,18 @@ var isSafeCoords = function(potentialX, potentialY, team){
 }
 
 var runThugEngines = function(){
-	for (var i in Thug.list){
-		Thug.list[i].engine();
+	for (var i in EngineThug.list){
+		EngineThug.list[i].engine();
 	}	
 }
 
-module.exports.getThugList = getThugList;
-module.exports.getThugById = getThugById;
-module.exports.createThug = createThug;
-module.exports.clearThugList = clearThugList;
-module.exports.isSafeCoords = isSafeCoords;
-module.exports.runThugEngines = runThugEngines;
+if(typeof exports == 'undefined'){
+}
+else {
+	module.exports.getThugList = getThugList;
+	module.exports.getThugById = getThugById;
+	module.exports.createThug = createThug;
+	module.exports.clearThugList = clearThugList;
+	module.exports.isSafeCoords = isSafeCoords;
+	module.exports.runThugEngines = runThugEngines;
+}

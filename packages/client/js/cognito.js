@@ -466,6 +466,9 @@ function showDefaultLoginButtons(){
     if (document.getElementById('userWelcomeText')){
         document.getElementById('userWelcomeText').style.display = "none";
 	}
+    if (document.getElementById('serverLoginButtons')){
+        show('serverLoginButtons');
+	}
 }
 
 function showAuthorizedLoginButtons(){
