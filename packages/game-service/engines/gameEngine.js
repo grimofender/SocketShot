@@ -1053,33 +1053,42 @@ var currentStreamingDay = new Date().getUTCDate();
 
 //TIMER1 - EVERY FRAME timer1 tiemer1 tiemr1
 //------------------------------------------------------------------------------
-setInterval(
-	function(){
-		if (pause == true)
-			return;
+var lastEx = new Date();
+var gameLoop = function(){
+	var difference = new Date() - lastEx;
+	console.log(difference);
+	lastEx = new Date();
+	
+	if (pause == true)
+		return;
 
-		player.runPlayerEngines();
-		thug.runThugEngines();
-			
-		if (gametype == "ctf"){
-			moveBags();
-		}
+	player.runPlayerEngines();
+	thug.runThugEngines();
 		
-		for (var i in SOCKET_LIST){			
-			var socket = SOCKET_LIST[i];			
-			socket.emit('update', updatePlayerList, updateThugList, updatePickupList, updateNotificationList, updateEffectList, updateMisc);
-		}
-		updatePlayerList = [];
-		updateThugList = [];
-		updatePickupList = [];
-		updateNotificationList = [];
-		updateEffectList = []; 	//1=shot, 2=blood, 3=boost, 4=smash, 5=body, 6=notification?
-		updateMisc = {};		
-		
-		checkForGameOver();
-	},
-	1000/60 //FPS frames per second
+	if (gametype == "ctf"){
+		moveBags();
+	}
+	
+	for (var i in SOCKET_LIST){			
+		var socket = SOCKET_LIST[i];			
+		socket.emit('update', updatePlayerList, updateThugList, updatePickupList, updateNotificationList, updateEffectList, updateMisc);
+	}
+	updatePlayerList = [];
+	updateThugList = [];
+	updatePickupList = [];
+	updateNotificationList = [];
+	updateEffectList = []; 	//1=shot, 2=blood, 3=boost, 4=smash, 5=body
+	updateMisc = {};		
+	
+	checkForGameOver();
+}
+
+
+setInterval(gameLoop,1000/60 //FPS
 );
+//setTimeout(gameLoop, 1000/60);
+
+
 
 var getAllPlayersFromDB = function(cb){
 	var cognitoSubsInGame = [];
