@@ -1,4 +1,6 @@
-global.removeCognitoSubFromArray = function(incomingUsers, cognitoSub){
+
+
+var removeCognitoSubFromArray = function(incomingUsers, cognitoSub){
 	var updatedIncomingUsers = [];
 	
 	for (var u = 0; u < incomingUsers.length; u++){
@@ -10,7 +12,7 @@ global.removeCognitoSubFromArray = function(incomingUsers, cognitoSub){
 	return updatedIncomingUsers;
 }
 
-global.getSocketIdFromCognitoSub = function(cognitoSub){
+var getSocketIdFromCognitoSub = function(cognitoSub){
 	for(var s in SOCKET_LIST){
 		if (SOCKET_LIST[s].cognitoSub == cognitoSub){
 			return 	SOCKET_LIST[s].id;
@@ -19,7 +21,7 @@ global.getSocketIdFromCognitoSub = function(cognitoSub){
 	return false;
 }
 
-global.getCurrentPlayersFromUsers = function(users){
+var getCurrentPlayersFromUsers = function(users){
 	var players = [];
 	
 	if (typeof users === "undefined"){
@@ -34,14 +36,14 @@ global.getCurrentPlayersFromUsers = function(users){
 	return players;
 }
 
-global.removeIndexesFromArray = function(array, indexes){
+var removeIndexesFromArray = function(array, indexes){
 	for (var i = indexes.length-1; i >= 0; i--){
 		array.splice(indexes[i],1);
 	}
 	return array;
 }
 
-global.comparePartySize = function(a,b) { //order
+var comparePartySize = function(a,b) { //order
   if (a.partySize < b.partySize)
     return 1;
   if (a.partySize > b.partySize)
@@ -49,7 +51,7 @@ global.comparePartySize = function(a,b) { //order
   return 0;
 }
 
-global.comparePartySizeAsc = function(a,b) { //order
+var comparePartySizeAsc = function(a,b) { //order
   if (a.partySize > b.partySize)
     return 1;
   if (a.partySize < b.partySize)
@@ -57,7 +59,7 @@ global.comparePartySizeAsc = function(a,b) { //order
   return 0;
 }
 
-global.compareCurrentPlayerSize = function(a,b) { //order
+var compareCurrentPlayerSize = function(a,b) { //order
 	var aCurrentPlayers = getCurrentPlayersFromUsers(a.currentUsers).length;
 	var bCurrentPlayers = getCurrentPlayersFromUsers(b.currentUsers).length;
 	
@@ -77,47 +79,17 @@ global.compareCurrentPlayerSize = function(a,b) { //order
 	return 0;
 }
 
-global.parseINIString = function(data){
-    var regex = {
-        section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
-        param: /^\s*([^=]+?)\s*=\s*(.*?)\s*$/,
-        comment: /^\s*;.*$/
-    };
-    var value = {};
-    var lines = data.split(/[\r\n]+/);
-    var section = null;
-    lines.forEach(function(line){
-        if(regex.comment.test(line)){
-            return;
-        }else if(regex.param.test(line)){
-            var match = line.match(regex.param);
-            if(section){
-                value[section][match[1]] = match[2];
-            }else{
-                value[match[1]] = match[2];
-            }
-        }else if(regex.section.test(line)){
-            var match = line.match(regex.section);
-            value[match[1]] = {};
-            section = match[1];
-        }else if(line.length == 0 && section){
-            section = null;
-        };
-    });
-    return value;
-}
-
-global.numberWithCommas = function(x) {
+var numberWithCommas = function(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-global.getProgressBarPercentage = function(value, floor, ceiling){
+var getProgressBarPercentage = function(value, floor, ceiling){
 	value -= floor;
 	ceiling -= floor;	
 	return Math.round((value/ceiling) * 1000) / 1000;
 }
 
-global.getFullRankName = function(rank){
+var getFullRankName = function(rank){
 	switch(rank) {
 		case "bronze1":
 			return "Bronze I";
@@ -146,13 +118,9 @@ global.getFullRankName = function(rank){
 	}
 }
 
-global.getDistance = function(entity1, entity2){
-		var dx1 = entity1.x - entity2.x;
-		var dy1 = entity1.y - entity2.y;
-		return Math.round(Math.sqrt(dx1*dx1 + dy1*dy1) * 10)/10;	
-}
 
-global.checkIfBlocking = function(object, pointA, pointB){
+
+var checkIfBlocking = function(object, pointA, pointB){
 	//intersect with top side of block?
 	if (line_intersects(pointA.x, pointA.y, pointB.x, pointB.y, object.x, object.y, (object.x + object.width), object.y)){
 		return true;
@@ -180,7 +148,7 @@ global.checkIfBlocking = function(object, pointA, pointB){
 	return false;
 }
 
-global.line_intersects = function(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p3_x, p3_y) {
+var line_intersects = function(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p3_x, p3_y) {
 
     var s1_x, s1_y, s2_x, s2_y;
     s1_x = p1_x - p0_x;
@@ -200,7 +168,7 @@ global.line_intersects = function(p0_x, p0_y, p1_x, p1_y, p2_x, p2_y, p3_x, p3_y
     return false; // No collision
 }
 
-global.isNumBetween = function(numBetween, num1, num2){
+var isNumBetween = function(numBetween, num1, num2){
 	if (num1 <= numBetween && numBetween <= num2){
 		return true;
 	}
@@ -210,27 +178,25 @@ global.isNumBetween = function(numBetween, num1, num2){
 	return false
 }
 
-global.Object.size = function(obj) {
-    var size = 0, key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
-    }
-    return size;
-};
-
-global.randomInt = function(min,max)
+var randomInt = function(min,max)
 {
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
-global.replaceValues = function(userData, content){
+var getDistance = function(entity1, entity2){
+	var dx1 = entity1.x - entity2.x;
+	var dy1 = entity1.y - entity2.y;
+	return Math.round(Math.sqrt(dx1*dx1 + dy1*dy1) * 10)/10;	
+}
+
+var replaceValues = function(userData, content){
 	for (var value in userData){
 		content = content.replace("{{"+value+"}}", userData[value]);
 	}
 	return content;
 }
 
-global.getRankFromRating = function(rating){
+var getRankFromRating = function(rating){
 	const rankings = [
 		{rank:"bronze1",rating:0},
 		{rank:"bronze2",rating:100},
@@ -264,7 +230,7 @@ global.getRankFromRating = function(rating){
 	return {rank:"bronze1", floor:0, nextRank:"bronze2", ceiling:100};
 }
 
-global.getLevelFromExperience = function(experience){
+var getLevelFromExperience = function(experience){
 	var pointsBetweenThisLevelAndNext = 2500;
 	var additionalPointsBetweenLevels = 2500; //This never gets updated. It is whats added to pointsBetweenLevels, which increases the higher the level.
 	var pointsForLevel = 0;
@@ -288,4 +254,29 @@ global.getLevelFromExperience = function(experience){
 		floor: experience,
 		ceiling: (experience + 1000000)
 	};
+}
+
+
+
+if(typeof exports == 'undefined'){
+}
+else {
+	global.removeCognitoSubFromArray = removeCognitoSubFromArray;
+	global.getSocketIdFromCognitoSub = getSocketIdFromCognitoSub;
+	global.getCurrentPlayersFromUsers = getCurrentPlayersFromUsers;
+	global.removeIndexesFromArray = removeIndexesFromArray;
+	global.comparePartySize = comparePartySize;
+	global.comparePartySizeAsc =comparePartySizeAsc;
+	global.compareCurrentPlayerSize = compareCurrentPlayerSize;
+	global.numberWithCommas = numberWithCommas;
+	global.getProgressBarPercentage = getProgressBarPercentage;
+	global.getFullRankName = getFullRankName;
+	global.checkIfBlocking = checkIfBlocking;
+	global.line_intersects = line_intersects;
+	global.isNumBetween = isNumBetween;
+	global.randomInt = randomInt;
+	global.getDistance = getDistance;
+	global.replaceValues = replaceValues;
+	global.getRankFromRating = getRankFromRating;
+	global.getLevelFromExperience = getLevelFromExperience;
 }

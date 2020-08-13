@@ -1,5 +1,6 @@
 var pickup;
 var block;
+var mapEngine;
 
 if(typeof exports == 'undefined'){
 }
@@ -372,6 +373,8 @@ var initializeBlocks = function(map){
 }
 
 if(typeof exports == 'undefined'){
+	mapEngine.initializePickups = initializePickups;
+	mapEngine.initializeBlocks = initializeBlocks;
 }
 else {
 	module.exports.initializePickups = initializePickups;

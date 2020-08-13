@@ -9,7 +9,10 @@ var logEngine;
 var gameServerEngine;
 
 if(typeof exports == 'undefined'){
-	//pickup = 
+	thug = EngineThug;
+	pickup = EnginePickup;
+	block = EngineBlock;
+	player = EnginePlayer;
 }
 else {
 	pickup = require('../entities/pickup.js');
@@ -1056,7 +1059,7 @@ var currentStreamingDay = new Date().getUTCDate();
 var lastEx = new Date();
 var gameLoop = function(){
 	var difference = new Date() - lastEx;
-	console.log(difference);
+	//console.log(difference);
 	lastEx = new Date();
 	
 	if (pause == true)
@@ -1186,10 +1189,9 @@ var sendFullGameStatus = function(socketId){
 	blockPack = block.getBlockList();
 	pickupPack = pickup.getPickupList();
 
-	var size = Object.size(playerList);			
 	miscPack.bagRed = bagRed;
 	miscPack.bagBlue = bagBlue;
-	miscPack.numPlayers = size;
+	miscPack.numPlayers = playerList.length;
 	miscPack.shop = shop;
 	miscPack.gameOver = gameOver;
 	miscPack.pregame = pregame;		
