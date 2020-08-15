@@ -9,10 +9,10 @@ var logEngine;
 var gameServerEngine;
 
 if(typeof exports == 'undefined'){
-	thug = EngineThug;
-	pickup = EnginePickup;
-	block = EngineBlock;
-	player = EnginePlayer;
+	//thug = EngineThug;
+	//pickup = EnginePickup;
+	//block = EngineBlock;
+	//player = EnginePlayer;
 }
 else {
 	pickup = require('../entities/pickup.js');
@@ -1059,7 +1059,7 @@ var currentStreamingDay = new Date().getUTCDate();
 var lastEx = new Date();
 var gameLoop = function(){
 	var difference = new Date() - lastEx;
-	//console.log(difference);
+	console.log(difference);
 	lastEx = new Date();
 	
 	if (pause == true)
@@ -1126,6 +1126,10 @@ var joinGame = function(cognitoSub, username, team, partyId){
 		dataAccessFunctions.dbGameServerUpdate();
 		socket.emit('signInResponse',{success:true,id:socket.id, mapWidth:mapWidth, mapHeight:mapHeight, whiteScore:whiteScore, blackScore:blackScore});
 	}	
+}
+
+var joinSinglePlayer = function(){
+		player.connect(0, cognitoSub, username, "black", "");
 }
 
 var sendFullGameStatus = function(socketId){

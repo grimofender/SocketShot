@@ -1,3 +1,5 @@
+var block = {};
+
 var EngineBlock = function(x, y, width, height, type){	
 	x *= 75;
 	y *= 75;
@@ -66,6 +68,11 @@ var isSafeCoords = function(potentialX, potentialY){
 }
 
 if(typeof exports == 'undefined'){
+	block.getBlockList = getBlockList;
+	block.getBlockById = getBlockById;
+	block.createBlock = createBlock;
+	block.clearBlockList = clearBlockList;
+	block.isSafeCoords = isSafeCoords;
 }
 else {
 	module.exports.getBlockList = getBlockList;

@@ -1,4 +1,3 @@
-page = "profile";
 initializePage();
 function initializePage(){
     showLocalElements();

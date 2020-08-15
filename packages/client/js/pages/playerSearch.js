@@ -1,4 +1,3 @@
-page = "playerSearch";
 initializePage();
 function initializePage(){
     showLocalElements();

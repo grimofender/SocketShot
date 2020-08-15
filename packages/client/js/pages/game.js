@@ -1,20 +1,24 @@
-page = "game";
 initializePage();
 function initializePage(){
 	getTokenFromUrlParameterAndLogin(); 	
 }
 
 function loginSuccess(){
-	autoPlayNow();
+	if (page == "game"){
+		autoPlayNow();
+	}
 }
 
 function loginFail(){
-	alert("Authentication failed while trying to join game."); 
-	window.location.href = serverHomePage;
+	if (page == "game"){
+		alert("Authentication failed while trying to join game."); 
+		window.location.href = serverHomePage;
+	}
 }
 
 function loginFinally(){
 	updateProfileLink();
+	startSinglePlayerGame();
 }
 
 function voteCTF(){
@@ -906,16 +910,22 @@ socket.on('signInResponse', function(data){
 		myPlayer.id = data.id;
 		mapWidth = data.mapWidth;
 		mapHeight = data.mapHeight;
-		showCanvas();
 		whiteScore = data.whiteScore;
-		blackScore = data.blackScore;	
+		blackScore = data.blackScore;
+		startGame();	
 		logg("ID: " + myPlayer.id);
 		mute = false;
+		
 	}
 	else {
 		alert(data.message);
 	}
 });
+
+function startGame(){
+	player.connect(0, cognitoSub, username, "black", "");
+	showCanvas();
+}
 
 socket.on('killScore', function(team, dataWhiteScore, dataBlackScore){
 	whiteScore = dataWhiteScore;

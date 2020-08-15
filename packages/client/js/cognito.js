@@ -49,6 +49,11 @@ function getTokenFromUrlParameterAndLogin(){
     });
 }
 
+function offlineGameStart(){
+	removeUrlParams();
+	startSinglePlayerGame();
+}
+
 function updateProfileLink(){
 	if (document.getElementById("menuRightLink")){
 		var link = serverHomePage + "user/" + cognitoSub;
@@ -109,8 +114,6 @@ socket.on('redirectToGame', function(url){
 
 function autoPlayNow(){
 	if (getUrlParam("join", "false") == "true"){
-		var options = {};
-		options.server = getUrl();
 		playNow();
 	}
 }

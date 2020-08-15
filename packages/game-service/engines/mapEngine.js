@@ -1,6 +1,6 @@
 var pickup;
 var block;
-var mapEngine;
+var mapEngine = {};
 
 if(typeof exports == 'undefined'){
 }

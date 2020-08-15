@@ -1,6 +1,5 @@
 console.log("home.js loading");
 
-page = "home";
 initializePage();
 function initializePage(){
     showLocalElements();

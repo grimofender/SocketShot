@@ -1,3 +1,5 @@
+var pickup = {};
+
 var EnginePickup = function(id, x, y, type, amount, respawnTime){
 	if (respawnTime > -1){
 		x-=1;
@@ -223,6 +225,13 @@ var checkForPickup = function(player){
 }
 
 if(typeof exports == 'undefined'){
+	pickup.pickupPickup = pickupPickup;
+	pickup.getPickupList = getPickupList;
+	pickup.getPickupById = getPickupById;
+	pickup.createPickup = createPickup;
+	pickup.clearPickupList = clearPickupList;
+	pickup.clockTick = clockTick;
+	pickup.checkForPickup = checkForPickup;
 }
 else {
 	module.exports.pickupPickup = pickupPickup;

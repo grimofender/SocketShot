@@ -1,3 +1,4 @@
+var thug = {};
 var gameEngine;
 var block;
 var entityHelpers;
@@ -400,6 +401,12 @@ var runThugEngines = function(){
 }
 
 if(typeof exports == 'undefined'){
+	thug.getThugList = getThugList;
+	thug.getThugById = getThugById;
+	thug.createThug = createThug;
+	thug.clearThugList = clearThugList;
+	thug.isSafeCoords = isSafeCoords;
+	thug.runThugEngines = runThugEngines;
 }
 else {
 	module.exports.getThugList = getThugList;
