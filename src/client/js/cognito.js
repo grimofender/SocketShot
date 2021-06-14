@@ -765,15 +765,16 @@ setInterval(
 	function(){	
 	
 		//Refresh header
-		if (document.getElementById("header") && document.getElementById("header").style.display != 'none' && isLoggedIn()){
+		if (document.getElementById("header") && document.getElementById("header").style.display != 'none' && isLoggedIn() && page != "game"){
 			headerRefreshTicker--;
 			if (headerRefreshTicker < 1){
 				//logg("Refreshing header");
 				getRequests();
 				if (!waitingOnRequest){
 					getOnlineFriendsAndParty();
-					if (page == "home")
-						getServerList();
+					if (page == "home"){
+						//getServerList();
+					}
 				}
 				waitingOnRequest = true;
 				if (page == "profile"){
